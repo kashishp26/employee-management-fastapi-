@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.schemas.department import DepartmentCreate
-from app.services.department_service import DepartmentService
+from app.services.employee_service import DepartmentService
 
 class DepartmentController:
 
