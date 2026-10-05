@@ -35,3 +35,16 @@ def test_login_invalid_credentials(client):
         }
     )
     assert response.status_code == 401
+
+def test_register_duplicate_email(client):
+    
+    response = client.post(
+        "/auth/register",
+        json={
+            "name": "Duplicate User",
+            "email": "testuser@example.com",
+            "password": "anotherpassword123",
+            "role": "EMPLOYEE"
+        }
+    )
+    assert response.status_code in [400, 409]
