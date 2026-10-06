@@ -102,6 +102,17 @@ class EmployeeService:
         if not dept:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid department_id")
 
+        # Duplicate email check for other employees
+        existing_email = db.query(Employee).filter(
+            Employee.email == emp_data.email,
+            Employee.id != emp_id
+        ).first()
+        if existing_email:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Employee with this email already exists."
+            )
+
         for key, value in emp_data.model_dump().items():
             setattr(emp, key, value)
 
@@ -118,6 +129,18 @@ class EmployeeService:
             dept = db.query(Department).filter(Department.id == update_data["department_id"]).first()
             if not dept:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid department_id")
+
+        # Duplicate email check for PATCH request
+        if "email" in update_data:
+            existing_email = db.query(Employee).filter(
+                Employee.email == update_data["email"],
+                Employee.id != emp_id
+            ).first()
+            if existing_email:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Employee with this email already exists."
+                )
 
         for key, value in update_data.items():
             setattr(emp, key, value)
